@@ -4,9 +4,9 @@ const SelectView = function(element){
   this.element = element;
 }
 
-SelectView.prototype.bindToEventWithDataMapper = function(eventName, dataMapper){
-  PubSub.subscribe(eventName, (evt) => {
-    const optionTexts = evt.detail.map(dataMapper)
+SelectView.prototype.bindEvents = function(){
+  PubSub.subscribe('CoutriesData:load', (evt) => {
+    const optionTexts = evt.detail.map(country => country.name)
     this.render(optionTexts)
   })
 }

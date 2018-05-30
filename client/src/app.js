@@ -14,6 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const countrySelect = document.getElementById('country-select')
   const countrySelectView = new SelectView(countrySelect)
-  countrySelectView.bindToEventWithDataMapper('CoutriesData:load', country => country.name)
+  countrySelectView.bindEvents();
 
 });

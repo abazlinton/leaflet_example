@@ -93,7 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const MapView = __webpack_require__(/*! ./views/map_view */ \"./client/src/views/map_view.js\");\nconst SelectView = __webpack_require__(/*! ./views/select_view */ \"./client/src/views/select_view.js\");\nconst CountryData = __webpack_require__(/*! ./models/country_data */ \"./client/src/models/country_data.js\")\n\ndocument.addEventListener('DOMContentLoaded', () => {\n\n  countryData = new CountryData();\n  countryData.getData();\n\n  const mapDiv = document.getElementById('map');\n  const mapView = new MapView(mapDiv, [55.9533, -3.1883], 5);\n  mapView.init();\n  mapView.goTo(20,20);\n\n  const countrySelect = document.getElementById('country-select')\n  const countrySelectView = new SelectView(countrySelect)\n  countrySelectView.bindToEventWithDataMapper('CoutriesData:load', country => country.name)\n\n});\n\n\n//# sourceURL=webpack:///./client/src/app.js?");
+eval("const MapView = __webpack_require__(/*! ./views/map_view */ \"./client/src/views/map_view.js\");\nconst SelectView = __webpack_require__(/*! ./views/select_view */ \"./client/src/views/select_view.js\");\nconst CountryData = __webpack_require__(/*! ./models/country_data */ \"./client/src/models/country_data.js\")\n\ndocument.addEventListener('DOMContentLoaded', () => {\n\n  countryData = new CountryData();\n  countryData.getData();\n\n  const mapDiv = document.getElementById('map');\n  const mapView = new MapView(mapDiv, [55.9533, -3.1883], 5);\n  mapView.init();\n  mapView.goTo(20,20);\n\n  const countrySelect = document.getElementById('country-select')\n  const countrySelectView = new SelectView(countrySelect)\n  countrySelectView.bindEvents();\n\n});\n\n\n//# sourceURL=webpack:///./client/src/app.js?");
 
 /***/ }),
 
@@ -148,7 +148,7 @@ eval("const leaflet = __webpack_require__(/*! leaflet */ \"./node_modules/leafle
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub */ \"./client/src/helpers/pub_sub.js\");\n\nconst SelectView = function(element){\n  this.element = element;\n}\n\nSelectView.prototype.bindToEventWithDataMapper = function(eventName, dataMapper){\n  PubSub.subscribe(eventName, (evt) => {\n    const optionTexts = evt.detail.map(dataMapper)\n    this.render(optionTexts)\n  })\n}\n\nSelectView.prototype.render = function(optionTexts) {\n\n  optionTexts.forEach((optionText, index) => {\n    const option = document.createElement('option')\n    option.textContent = optionText;\n    option.value = index;\n    this.element.appendChild(option)\n  })\n  \n}\n\n\nmodule.exports = SelectView;\n\n//# sourceURL=webpack:///./client/src/views/select_view.js?");
+eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub */ \"./client/src/helpers/pub_sub.js\");\n\nconst SelectView = function(element){\n  this.element = element;\n}\n\nSelectView.prototype.bindEvents = function(){\n  PubSub.subscribe('CoutriesData:load', (evt) => {\n    const optionTexts = evt.detail.map(country => country.name)\n    this.render(optionTexts)\n  })\n}\n\nSelectView.prototype.render = function(optionTexts) {\n\n  optionTexts.forEach((optionText, index) => {\n    const option = document.createElement('option')\n    option.textContent = optionText;\n    option.value = index;\n    this.element.appendChild(option)\n  })\n  \n}\n\n\nmodule.exports = SelectView;\n\n//# sourceURL=webpack:///./client/src/views/select_view.js?");
 
 /***/ }),
 
