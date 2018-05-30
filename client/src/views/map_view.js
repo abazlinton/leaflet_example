@@ -17,7 +17,6 @@ MapView.prototype.init = function () {
     .setView(this.coords, this.zoomLevel);
 
   PubSub.subscribe('CountryData:selected-country', (evt) => {
-    console.log(evt.detail);
     const lat = evt.detail.latlng[0]
     const lng = evt.detail.latlng[1]
     const bounds = this.guessBoundsFromAreaAndLatLng(evt.detail.area, lat, lng)
