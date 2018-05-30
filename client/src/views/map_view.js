@@ -16,10 +16,37 @@ MapView.prototype.init = function () {
     .addLayer(osm)
     .setView(this.coords, this.zoomLevel);
 
+  PubSub.subscribe('CountryData:selected-country', (evt) => {
+    console.log(evt.detail);
+    const lat = evt.detail.latlng[0]
+    const lng = evt.detail.latlng[1]
+    const bounds = this.guessBoundsFromAreaAndLatLng(evt.detail.area, lat, lng)
+    this.fitBounds(bounds)
+    this.addMarker(lat, lng)
+  })
+
 }
 
-MapView.prototype.goTo = function(lat, lng){
+MapView.prototype.guessBoundsFromAreaAndLatLng = function (area, lat, lng) {
+  const countryWidthGuess = Math.sqrt(area)
+  const degInKm = 111;
+  const topLeftLat = lat - countryWidthGuess / degInKm / 2
+  const topLeftLng = lng - countryWidthGuess / degInKm / 2
+  const bottomRightLat = topLeftLat + countryWidthGuess / degInKm
+  const bottomRightLng = topLeftLng + countryWidthGuess / degInKm
+  return [[topLeftLat, topLeftLng], [bottomRightLat, bottomRightLng]]
+}
+
+MapView.prototype.goTo = function (lat, lng) {
   this.leafletMap.setView([lat, lng]);
-};
+}
+
+MapView.prototype.fitBounds = function (corners) {
+  this.leafletMap.fitBounds(corners)
+}
+
+MapView.prototype.addMarker = function (lat, lng) {
+  leaflet.marker([ lat, lng ]).addTo(this.leafletMap);
+}
 
 module.exports = MapView;

@@ -8,9 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   countryData.getData();
 
   const mapDiv = document.getElementById('map');
-  const mapView = new MapView(mapDiv, [55.9533, -3.1883], 5);
+  const mapView = new MapView(mapDiv, [55.9533, -3.1883], 10);
   mapView.init();
-  mapView.goTo(20,20);
 
   const countrySelect = document.getElementById('country-select')
   const countrySelectView = new SelectView(countrySelect)
