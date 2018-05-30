@@ -93,7 +93,40 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const MapView = __webpack_require__(/*! ./views/map_view */ \"./client/src/views/map_view.js\");\n\ndocument.addEventListener('DOMContentLoaded', () => {\n  const mapDiv = document.getElementById('map');\n  const mapView = new MapView(mapDiv, [55.9533, -3.1883], 13);\n  mapView.init();\n\n});\n\n\n//# sourceURL=webpack:///./client/src/app.js?");
+eval("const MapView = __webpack_require__(/*! ./views/map_view */ \"./client/src/views/map_view.js\");\nconst SelectView = __webpack_require__(/*! ./views/select_view */ \"./client/src/views/select_view.js\");\nconst CountryData = __webpack_require__(/*! ./models/country_data */ \"./client/src/models/country_data.js\")\n\ndocument.addEventListener('DOMContentLoaded', () => {\n\n  countryData = new CountryData();\n  countryData.getData();\n\n  const mapDiv = document.getElementById('map');\n  const mapView = new MapView(mapDiv, [55.9533, -3.1883], 5);\n  mapView.init();\n  mapView.goTo(20,20);\n\n  const countrySelect = document.getElementById('country-select')\n  const countrySelectView = new SelectView(countrySelect)\n  countrySelectView.bindToEventWithDataMapper('CoutriesData:load', country => country.name)\n\n});\n\n\n//# sourceURL=webpack:///./client/src/app.js?");
+
+/***/ }),
+
+/***/ "./client/src/helpers/pub_sub.js":
+/*!***************************************!*\
+  !*** ./client/src/helpers/pub_sub.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("const PubSub = {\n  publish: function (channel, payload) {\n    const event = new CustomEvent(channel, {\n      detail: payload\n    });\n    document.dispatchEvent(event);\n  },\n\n  subscribe: function (channel, callback) {\n    document.addEventListener(channel, callback);\n  }\n};\n\nmodule.exports = PubSub;\n\n\n//# sourceURL=webpack:///./client/src/helpers/pub_sub.js?");
+
+/***/ }),
+
+/***/ "./client/src/helpers/request.js":
+/*!***************************************!*\
+  !*** ./client/src/helpers/request.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("const Request = function (url) {\n  this.url = url;\n};\n\nRequest.prototype.get = function () {\n  return fetch(this.url)\n    .then((response) => response.json());\n};\n\nRequest.prototype.post = function (payload) {\n  return fetch(this.url, {\n    method: 'POST',\n    body: JSON.stringify(payload),\n    headers: { 'Content-Type': 'application/json' }\n  })\n    .then((response) => response.json());\n};\n\nRequest.prototype.delete = function (id) {\n  return fetch(`${this.url}/${id}`, {\n    method: 'DELETE'\n  })\n    .then((response) => response.json());\n};\n\nmodule.exports = Request;\n\n\n//# sourceURL=webpack:///./client/src/helpers/request.js?");
+
+/***/ }),
+
+/***/ "./client/src/models/country_data.js":
+/*!*******************************************!*\
+  !*** ./client/src/models/country_data.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("const Request = __webpack_require__(/*! ../helpers/request */ \"./client/src/helpers/request.js\");\nconst PubSub = __webpack_require__(/*! ../helpers/pub_sub */ \"./client/src/helpers/pub_sub.js\");\n\nconst CoutriesData = function () {\n  this.countries = [];\n};\n\nCoutriesData.prototype.getData = function () {\n  const request = new Request('https://restcountries.eu/rest/v2/all');\n  request.get()\n    .then(data => this.handleDataReady(data));\n};\n\nCoutriesData.prototype.handleDataReady = function (countries) {\n  this.countries = countries;\n  PubSub.publish('CoutriesData:load', this.countries);\n};\n\n\n\nmodule.exports = CoutriesData;\n\n\n//# sourceURL=webpack:///./client/src/models/country_data.js?");
 
 /***/ }),
 
@@ -104,7 +137,18 @@ eval("const MapView = __webpack_require__(/*! ./views/map_view */ \"./client/src
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const leaflet = __webpack_require__(/*! leaflet */ \"./node_modules/leaflet/dist/leaflet-src.js\");\n\nconst MapView = function(divId, startCoords, startZoom){\n  this.coords = startCoords;\n  this.zoomLevel = startZoom;\n  this.divId = divId;\n  this.leafletMap = null;\n\n}\n\nMapView.prototype.init = function(){\n  const osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';\n    const osm = new leaflet.TileLayer(osmUrl);\n\n    this.leafletMap = leaflet.map(this.divId)\n        .addLayer(osm)\n        .setView(this.coords, this.zoomLevel);\n}\n\nmodule.exports = MapView;\n\n//# sourceURL=webpack:///./client/src/views/map_view.js?");
+eval("const leaflet = __webpack_require__(/*! leaflet */ \"./node_modules/leaflet/dist/leaflet-src.js\");\nconst PubSub = __webpack_require__(/*! ../helpers/pub_sub */ \"./client/src/helpers/pub_sub.js\")\n\nconst MapView = function (divId, startCoords, startZoom) {\n  this.coords = startCoords;\n  this.zoomLevel = startZoom;\n  this.divId = divId;\n  this.leafletMap = null;\n}\n\nMapView.prototype.init = function () {\n  const osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';\n  const osm = new leaflet.TileLayer(osmUrl);\n\n  this.leafletMap = leaflet.map(this.divId)\n    .addLayer(osm)\n    .setView(this.coords, this.zoomLevel);\n\n}\n\nMapView.prototype.goTo = function(lat, lng){\n  this.leafletMap.setView([lat, lng]);\n};\n\nmodule.exports = MapView;\n\n//# sourceURL=webpack:///./client/src/views/map_view.js?");
+
+/***/ }),
+
+/***/ "./client/src/views/select_view.js":
+/*!*****************************************!*\
+  !*** ./client/src/views/select_view.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("const PubSub = __webpack_require__(/*! ../helpers/pub_sub */ \"./client/src/helpers/pub_sub.js\");\n\nconst SelectView = function(element){\n  this.element = element;\n}\n\nSelectView.prototype.bindToEventWithDataMapper = function(eventName, dataMapper){\n  PubSub.subscribe(eventName, (evt) => {\n    const optionTexts = evt.detail.map(dataMapper)\n    this.render(optionTexts)\n  })\n}\n\nSelectView.prototype.render = function(optionTexts) {\n\n  optionTexts.forEach((optionText, index) => {\n    const option = document.createElement('option')\n    option.textContent = optionText;\n    option.value = index;\n    this.element.appendChild(option)\n  })\n  \n}\n\n\nmodule.exports = SelectView;\n\n//# sourceURL=webpack:///./client/src/views/select_view.js?");
 
 /***/ }),
 
