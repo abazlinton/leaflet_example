@@ -1,10 +1,10 @@
 const leaflet = require('leaflet');
 const PubSub = require('../helpers/pub_sub')
 
-const MapView = function (divId, startCoords, startZoom) {
-  this.coords = startCoords;
-  this.zoomLevel = startZoom;
-  this.divId = divId;
+const MapView = function (divId, coords, zoomLevel) {
+  this.divId = divId;  
+  this.coords = coords;
+  this.zoomLevel = zoomLevel;
   this.leafletMap = null;
 }
 
@@ -15,16 +15,16 @@ MapView.prototype.init = function () {
   this.leafletMap = leaflet.map(this.divId)
     .addLayer(osm)
     .setView(this.coords, this.zoomLevel);
+}
 
+MapView.prototype.bindEvents = function () {
   PubSub.subscribe('CountryData:selected-country', (evt) => {
-    console.log(evt.detail);
     const lat = evt.detail.latlng[0]
     const lng = evt.detail.latlng[1]
     const bounds = this.guessBoundsFromAreaAndLatLng(evt.detail.area, lat, lng)
     this.fitBounds(bounds)
     this.addMarker(lat, lng)
   })
-
 }
 
 MapView.prototype.guessBoundsFromAreaAndLatLng = function (area, lat, lng) {
@@ -46,7 +46,7 @@ MapView.prototype.fitBounds = function (corners) {
 }
 
 MapView.prototype.addMarker = function (lat, lng) {
-  leaflet.marker([ lat, lng ]).addTo(this.leafletMap);
+  leaflet.marker([lat, lng]).addTo(this.leafletMap);
 }
 
 module.exports = MapView;

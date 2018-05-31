@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const mapDiv = document.getElementById('map');
   const mapView = new MapView(mapDiv, [55.9533, -3.1883], 10);
   mapView.init();
+  mapView.bindEvents();
 
   const countrySelect = document.getElementById('country-select')
   const countrySelectView = new SelectView(countrySelect)
