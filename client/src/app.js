@@ -16,11 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
   mapView.init();
 
   const countrySelect = document.getElementById('country-select')
-  const countrySelectView = new SelectView(countrySelect)
-  countrySelectView.bindEvents();
+  const countrySelectView = new SelectView(countrySelect, 'countrySelectView')
+  countrySelectView.bindToEventWithDataMapper('CoutriesData:load', country => country.name)
+
+  // countrySelectView.bindEvents();
 
   const bucketListSelect = document.getElementById('bucket-list-select')
-  const bucketListSelectView = new SelectView(bucketListSelect)
-  bucketListSelectView.bindEvents();
+  const bucketListSelectView = new SelectView(bucketListSelect, 'bucketListSelectView')
+  bucketListSelectView.bindToEventWithDataMapper('BucketList:update', country => country.name)
 
 });

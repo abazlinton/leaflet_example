@@ -21,7 +21,9 @@ BucketList.prototype.get = function(){
 BucketList.prototype.add = function(country){
   this.list.push(country)
   this.request.post(country)
-    .then((data) => console.log(data))
+    .then((data) => {
+      PubSub.publish('BucketList:update', data)
+    })
 }
 
 module.exports = BucketList;
