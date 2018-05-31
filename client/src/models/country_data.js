@@ -20,10 +20,5 @@ CoutriesData.prototype.handleDataReady = function (countries) {
   PubSub.publish('CoutriesData:load', this.countries);
 };
 
-CoutriesData.prototype.getCountryByIndex = function (index) {
-
-}
-
-
 
 module.exports = CoutriesData;
